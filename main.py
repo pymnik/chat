@@ -16,5 +16,5 @@ def send_message():
     id = message.get("id")
     return True
 
-if name == "__main__":
+if __name__ == "__main__":
     app.run()
