@@ -23,7 +23,7 @@ def send_message():
     id = message.get("id")
     return True
 
-@app.route("/api/chat", methods=["GET"])
+@app.route("/api/chats/<user_id>", methods=["GET"])
 def get_chats(user_id):
     chats = cur.execute(f"SELECT CHATS.id, CHATS.user1, CHATS.user2, U1.username as U1NAME, U2.username as U2NAME FROM WHERE user1 = {user_id} OR user2 = {user_id} '\
                          LEFT JOIN USERS U1 ON U1.id = CHATS.user1 LEFT JOIN USERS U2 ON U2.id = CHATS.user2")
