@@ -10,5 +10,5 @@ cur = conn.cursor()
 
 cur.execute("CREATE TABLE IF NOT EXISTS USERS(id serial primary key, username text);")
 cur.execute("CREATE TABLE IF NOT EXISTS CHATS(id serial primary key, user1 INTEGER REFERENCES USERS(id), user2 INTEGER REFERENCES USERS(id));")
-cur.execute("CREATE TABLE IF NOT EXISTS MESSAGES(id serial primary key, userid INTEGER REFERENCES USERS(id), chatid INTEGER RFERENCES CHATS(id));")
+cur.execute("CREATE TABLE IF NOT EXISTS MESSAGES(id serial primary key, userid INTEGER REFERENCES USERS(id), chatid INTEGER REFERENCES CHATS(id));")
 conn.commit()
