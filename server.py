@@ -2,7 +2,6 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
 import psycopg2
-import db
 import json
 
 conn = psycopg2.connect(os.environ.get("DATABASE_URL"))
