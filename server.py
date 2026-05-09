@@ -32,7 +32,7 @@ def get_chats(user_id):
     response = supabase.rpc(
         "get_user_chats",
         {
-            "user_id_input":user_id
+            "user_id_input":int(user_id)
         }
     ).execute()
     return response.data
