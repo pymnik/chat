@@ -15,9 +15,15 @@ supabase: Client = create_client(
     os.environ.get("SUPABASE_KEY")
 )
             
-@app.route("/api/messages", methods=["GET"])
-def get_messages():
-    return None
+@app.route("/api/messages/<chat_id>", methods=["GET"])
+def get_messages(chat_id):
+    response = supabase.rpc(
+        "get_chat_messages",
+        {
+            "chat_id": int(chat_id)
+        }
+    ).execute()
+    return response.data
 
 @app.route("/api/messages", methods=["POST"])
 def send_message():
@@ -33,6 +39,16 @@ def get_chats(user_id):
         "get_user_chats",
         {
             "user_id_input":int(user_id)
+        }
+    ).execute()
+    return response.data
+
+@app.route("/api/auth/<name>", methods=["GET"])
+def get_chats(name):
+    response = supabase.rpc(
+        "get_user_id",
+        {
+            "nickname": name
         }
     ).execute()
     return response.data
