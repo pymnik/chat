@@ -44,7 +44,7 @@ def get_chats(user_id):
     return response.data
 
 @app.route("/api/auth/<name>", methods=["GET"])
-def get_chats(name):
+def auth(name):
     response = supabase.rpc(
         "get_user_id",
         {
