@@ -51,7 +51,7 @@ def auth(name):
             "nickname": name
         }
     ).execute()
-    return str(response.data)
+    return {"id": str(response.data)}
     
 
 if __name__ == "__main__":
