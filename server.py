@@ -25,13 +25,15 @@ def get_messages(chat_id):
     ).execute()
     return response.data
 
-@app.route("/api/messages", methods=["POST"])
-def send_message():
-    message = request().json()
-    text = message.get("text")
-    username = message.get("username")
-    id = message.get("id")
-    return True
+@app.route("/api/messages/<msg>", methods=["POST"])
+def send_message(msg):
+    response = supabase.rpc(
+        "save_message",
+        {
+            "msg": jsonify(msg)
+        }
+    ).execute()
+    return response
 
 @app.route("/api/chats/<user_id>", methods=["GET"])
 def get_chats(user_id):
