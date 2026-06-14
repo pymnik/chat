@@ -30,10 +30,10 @@ def send_message(msg):
     response = supabase.rpc(
         "save_message",
         {
-            "msg": jsonify(msg)
+            "msg": json.loads(msg)
         }
     ).execute()
-    return response
+    return response.data
 
 @app.route("/api/chats/<user_id>", methods=["GET"])
 def get_chats(user_id):
