@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chat</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Login screen -->
+  <div id="login" class="login-screen">
+    <form id="login-form" class="login-card">
+      <h1>Chat</h1>
+      <p class="subtitle">Sign in with your username</p>
+      <input id="username-input" type="text" placeholder="Username" autocomplete="off" required />
+      <button type="submit">Enter</button>
+      <p id="login-error" class="error"></p>
+    </form>
+  </div>
+
+  <!-- Chat screen -->
+  <div id="app" class="app hidden">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <span id="current-user" class="current-user"></span>
+        <button id="logout-btn" title="Log out">Log out</button>
+      </div>
+      <div id="chat-list" class="chat-list"></div>
+    </aside>
+
+    <main class="main">
+      <header class="chat-header">
+        <h2 id="chat-title">Select a chat</h2>
+      </header>
+      <div id="messages" class="messages"></div>
+      <form id="message-form" class="message-form hidden">
+        <input id="message-input" type="text" placeholder="Type a message…" autocomplete="off" />
+        <button type="submit">Send</button>
+      </form>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
