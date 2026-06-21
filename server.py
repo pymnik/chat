@@ -43,7 +43,7 @@ def get_chats(user_id):
             "user_id_input":int(user_id)
         }
     ).execute()
-    return response.data
+    return {"sent": response.data}
 
 @app.route("/api/auth/<name>", methods=["GET"])
 def auth(name):
