@@ -33,7 +33,7 @@ def send_message(msg):
             "msg": json.loads(msg)
         }
     ).execute()
-    return response.data
+    return jsonify({"sent": response.data})
 
 @app.route("/api/chats/<user_id>", methods=["GET"])
 def get_chats(user_id):
@@ -43,7 +43,7 @@ def get_chats(user_id):
             "user_id_input":int(user_id)
         }
     ).execute()
-    return jsonify({"sent": str(response.data)})
+    return response.data
 
 @app.route("/api/auth/<name>", methods=["GET"])
 def auth(name):
