@@ -24,7 +24,7 @@ const messageForm = document.getElementById("message-form");
 const messageInput = document.getElementById("message-input");
 const audioSent = new Audio("sent.mp3");
 const audioReceived = new Audio("received.mp3");
-const messageNumber = 0;
+let messageNumber = 0;
 
 // ---- Helpers ----
 async function apiGet(path) {
@@ -188,9 +188,10 @@ function renderMessages(messages) {
     messagesEl.innerHTML = `<div class="empty">No messages yet. Say hi!</div>`;
     return;
   }
-  else if (messages.length > messageNumber) {
+  else if (messageNumber > 0 && messages.length > messageNumber && String(messages[messages.length - 1].sender) !== String(currentUser.id)) {
     audioReceived.play();
   }
+
   messageNumber = messages.length;
 
   messagesEl.innerHTML = "";
