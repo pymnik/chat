@@ -173,7 +173,7 @@ function openChat(chatId, name, itemEl) {
 async function loadMessages() {
   if (!activeChatId) return;
   try {
-    const messages = await apiGet(`/api/messages/${encodeURIComponent(activeChatId)}`);
+    let messages = await apiGet(`/api/messages/${encodeURIComponent(activeChatId)}`);
     renderMessages(Array.isArray(messages) ? messages : []);
   } catch (err) {
     console.error(err);
