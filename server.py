@@ -12,7 +12,7 @@ CORS(app)
 
 supabase: Client = create_client(
     os.environ.get("SUPABASE_URL"),
-    os.environ.get("SUPABASE_KEY")
+    os.environ.get("SUPABASE_KEY"),
 )
             
 @app.route("/api/messages/<chat_id>", methods=["GET"])
@@ -27,6 +27,17 @@ def get_messages(chat_id):
 
 @app.route("/api/messages/<msg>", methods=["POST"])
 def send_message(msg):
+    if msg.file != None:
+        with open(msg.file, "rb") as f:
+            supabase.storage.from_("chat_files").upload(
+                path = f"chat_files/{msg.file.filename}",
+                file = f,
+                file_options = {"content_type": msg.file.content_type}
+            )
+
+        public_url = supabase.storage.from_("chat_files").get_public_url(f"chat_files/{msg.file.filename}")
+        msg.file = public_url
+        # now uploading the file to storage, next get and display on the frontend
     response = supabase.rpc(
         "save_message",
         {
