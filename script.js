@@ -22,6 +22,7 @@ const chatTitleEl = document.getElementById("chat-title");
 const messagesEl = document.getElementById("messages");
 const messageForm = document.getElementById("message-form");
 const messageInput = document.getElementById("message-input");
+const fileInputBtn = document.getElementById("file-input");
 const audioSent = new Audio("sent.mp3");
 const audioReceived = new Audio("received.mp3");
 let messageNumber = 0;
@@ -173,7 +174,7 @@ function openChat(chatId, name, itemEl) {
 async function loadMessages() {
   if (!activeChatId) return;
   try {
-    let messages = await apiGet(`/api/messages/${encodeURIComponent(activeChatId)}`);
+    const messages = await apiGet(`/api/messages/${encodeURIComponent(activeChatId)}`);
     renderMessages(Array.isArray(messages) ? messages : []);
   } catch (err) {
     console.error(err);
@@ -200,6 +201,7 @@ function renderMessages(messages) {
     const senderName = msg.sender_name;
     const content = msg.content;
     const time = msg.timestamp;
+    const file_url = msg.file_url;
 
     const mine = String(senderId) === String(currentUser.id);
 
@@ -207,6 +209,7 @@ function renderMessages(messages) {
     el.className = `message ${mine ? "out" : "in"}`;
     el.innerHTML = `
       ${!mine && senderName ? `<div class="sender">${escapeHtml(senderName)}</div>` : ""}
+      ${file_url ? `<div class='img-container'><img src="${escapeHtml(file_url)}" alt="Image" class="message-image"></div>` : ""}
       <div class="content">${escapeHtml(content)}</div>
       ${time ? `<div class="time">${escapeHtml(formatTime(time))}</div>` : ""}
     `;
@@ -219,7 +222,10 @@ function renderMessages(messages) {
 // ---- Sending ----
 messageForm.addEventListener("submit", async (e) => {
   e.preventDefault();
+  
   const text = messageInput.value.trim();
+  const file = fileInputBtn.files[0];
+
   if (!text || !activeChatId) return;
 
   const payload = {
@@ -227,6 +233,7 @@ messageForm.addEventListener("submit", async (e) => {
     senderId: currentUser.id,
     text: text,
     time: new Date().toISOString(),
+    file: file,
   };
 
   console.log("Sending message:", payload);

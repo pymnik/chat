@@ -281,3 +281,21 @@ button:hover {
   flex-direction: column;
   gap: 2px;
 }
+
+.img-container {
+  margin-top: 6px;
+}
+
+.message-image {
+  max-width: 100%;
+  border-radius: 8px;
+  margin-top: 6px;
+}
+
+.file-input {
+  background: transparent;
+  color: var(--muted);
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+}
