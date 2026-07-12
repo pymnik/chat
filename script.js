@@ -34,8 +34,19 @@ async function apiGet(path) {
   return res.json();
 }
 
-async function apiPost(path) {
-  const res = await fetch(API_BASE + path, { method: "POST" });
+async function apiPost(path, body) {
+  let res;
+  if (!body){
+    res = await fetch(API_BASE + path, {
+    method: "POST"
+  });
+  }
+  else{
+    res = await fetch(API_BASE + path, {
+    method: "POST",
+    body: body
+  });
+  }
   if (!res.ok) throw new Error(`POST ${path} failed: ${res.status}`);
   // Body may be empty or non-JSON; don't choke on it.
   try {
@@ -236,13 +247,16 @@ messageForm.addEventListener("submit", async (e) => {
     file: file,
   };
 
+  const formData = new FormData();
+  formData.append("msg", JSON.stringify(payload));
+
   console.log("Sending message:", payload);
 
   messageInput.value = "";
   try {
     // The endpoint takes the message in the URL path.
     const encoded = encodeURIComponent(JSON.stringify(payload));
-    await apiPost(`/api/messages/${encoded}`);
+    await apiPost(`/api/messages/${encoded}`, formData);
     await loadMessages();
   } catch (err) {
     console.error(err);

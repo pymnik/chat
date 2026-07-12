@@ -27,18 +27,18 @@ def get_messages(chat_id):
 
 @app.route("/api/messages/<msg>", methods=["POST"])
 def send_message(msg):
-    msg = json.loads(msg)
-    if msg["file"] != None:
-        with open(msg["file"], "rb") as f:
+    msg = json.loads(request.form["msg"]) #send the form in frontend!!
+    if "file" in request.files != None:
+        file = request.files["file"]
+        with open(file, "rb") as f:
             supabase.storage.from_("chat_files").upload(
-                path = f"chat_files/{msg['file'].filename}",
+                path = f"chat_files/{file.filename}",
                 file = f,
-                file_options = {"content_type": msg["file"].content_type}
+                file_options = {"content_type": file.content_type}
             )
 
-        public_url = supabase.storage.from_("chat_files").get_public_url(f"chat_files/{msg['file'].filename}")
+        public_url = supabase.storage.from_("chat_files").get_public_url(f"chat_files/{file.filename}")
         msg["file"] = public_url
-        # now uploading the file to storage, next get and display on the frontend
     response = supabase.rpc(
         "save_message",
         {
