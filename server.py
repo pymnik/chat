@@ -4,6 +4,7 @@ import os
 import json
 from supabase import create_client, Client
 from dotenv import load_dotenv
+import time
 
 load_dotenv("var.env")
 
@@ -30,13 +31,14 @@ def send_message(msg):
     msg = json.loads(request.form["msg"]) 
     if "file" in request.files:
         file = request.files["file"]
+        timestamp = str(time.time())
         supabase.storage.from_("chat_files").upload(
-            path=f"chat_files/{file.filename}",
+            path=f"chat_files/{file.filename + timestamp}",
             file=file.read(),
             file_options={"content-type": file.content_type}
         )
 
-        public_url = supabase.storage.from_("chat_files").get_public_url(f"chat_files/{file.filename}")
+        public_url = supabase.storage.from_("chat_files").get_public_url(f"chat_files/{file.filename + timestamp}")
         msg["file_url"] = public_url
 
     response = supabase.rpc(
