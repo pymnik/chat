@@ -243,8 +243,7 @@ messageForm.addEventListener("submit", async (e) => {
     chatId: activeChatId,
     senderId: currentUser.id,
     text: text,
-    time: new Date().toISOString(),
-    file: file,
+    time: new Date().toISOString()
   };
 
   const formData = new FormData();
