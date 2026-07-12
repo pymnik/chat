@@ -249,6 +249,9 @@ messageForm.addEventListener("submit", async (e) => {
 
   const formData = new FormData();
   formData.append("msg", JSON.stringify(payload));
+  if (file) {
+    formData.append("file", file);
+  }
 
   console.log("Sending message:", payload);
 
