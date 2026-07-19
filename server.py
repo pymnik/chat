@@ -34,7 +34,7 @@ def send_message(msg):
         supabase.storage.from_("chat_files").upload(
             path=f"chat_files/{file.filename}",
             file=file.read(),
-            file_options={"content-type": file.content_type, "upsert": True}
+            file_options={"content-type": file.content_type, "upsert": "true"}
         )
         public_url = supabase.storage.from_("chat_files").get_public_url(f"chat_files/{file.filename}")
         msg["file_url"] = public_url
