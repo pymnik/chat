@@ -5,6 +5,7 @@ import json
 from supabase import create_client, Client
 from dotenv import load_dotenv
 import time
+import ffmpeg
 
 load_dotenv("var.env")
 
@@ -28,9 +29,21 @@ def get_messages(chat_id):
 
 @app.route("/api/messages/<msg>", methods=["POST"])
 def send_message(msg):
+    videoTypes = ['mp4', 'avi', 'mov', 'wmv', 'flv', 'mkv']
+    audioTypes = ['mp3', 'wav', 'ogg', 'm4a', 'flac']
     msg = json.loads(request.form["msg"]) 
     if "file" in request.files:
         file = request.files["file"]
+        file_extension = os.path.splitext(file.filename)[1].lower()
+        if file_extension in videoTypes:
+            ffmpeg.input(file).output("temp.mov").run(overwrite_output=True)
+            file_type = "video"
+        elif file_extension in audioTypes:
+            ffmpeg.input(file).output("temp.wav").run(overwrite_output=True)
+            file_type = "audio"
+        else:
+            file_type = "img"
+
         supabase.storage.from_("chat_files").upload(
             path=f"chat_files/{file.filename}",
             file=file.read(),

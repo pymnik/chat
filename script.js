@@ -25,7 +25,16 @@ const messageInput = document.getElementById("message-input");
 const fileInputBtn = document.getElementById("file-input");
 const audioSent = new Audio("sent.mp3");
 const audioReceived = new Audio("received.mp3");
+const filePopup = document.getElementById("file_popup");
+const filePopupClose = document.getElementById("file_popup_close");
+const filePopupContent = document.getElementById("file_popup_content");
+const messageFormPopup = document.getElementById("message-form-popup");
+const voiceInputBtn = document.getElementById("voice-input");
+const voicePlayer = document.getElementById("voice-player");
 let messageNumber = 0;
+let audioRecorder = null;
+let audioChunks = [];
+let isRecording = false;
 
 // ---- Helpers ----
 async function apiGet(path) {
@@ -192,6 +201,19 @@ async function loadMessages() {
   }
 }
 
+function checkFileType(file) {
+  if (!file) return null;
+  const imageTypes = [".jpeg", ".png", ".gif", ".jpg", ".bmp", ".webp"];
+  const videoTypes = [".mp4", ".avi", ".mov", ".wmv", ".flv", ".mkv"];
+  const audioTypes = [".mp3", ".wav", ".ogg", ".m4a", ".flac"];
+  const fileName = file.toLowerCase();
+  if (imageTypes.some(ext => fileName.endsWith(ext))) return "img";
+  if (videoTypes.some(ext => fileName.endsWith(ext))) return "video";
+  if (audioTypes.some(ext => fileName.endsWith(ext))) return "audio";
+  return null;
+
+}
+
 function renderMessages(messages) {
   const wasAtBottom =
     messagesEl.scrollHeight - messagesEl.scrollTop - messagesEl.clientHeight < 80;
@@ -214,13 +236,15 @@ function renderMessages(messages) {
     const time = msg.timestamp;
     const file_url = msg.file_url;
 
+    const fileType = checkFileType(file_url); // Call the function to check the file type
+
     const mine = String(senderId) === String(currentUser.id);
 
     const el = document.createElement("div");
     el.className = `message ${mine ? "out" : "in"}`;
     el.innerHTML = `
       ${!mine && senderName ? `<div class="sender">${escapeHtml(senderName)}</div>` : ""}
-      ${file_url ? `<div class='img-container'><img src="${escapeHtml(file_url)}" alt="Image" class="message-image"></div>` : ""}
+      ${file_url && fileType ? `<div class='img-container'><${fileType} src="${escapeHtml(file_url)}" alt="${escapeHtml(file_url)}" class="message-${fileType}"></div>` : ""}
       <div class="content">${escapeHtml(content)}</div>
       ${time ? `<div class="time">${escapeHtml(formatTime(time))}</div>` : ""}
     `;
@@ -230,11 +254,34 @@ function renderMessages(messages) {
   if (wasAtBottom) messagesEl.scrollTop = messagesEl.scrollHeight;
 }
 
-// ---- Sending ----
-messageForm.addEventListener("submit", async (e) => {
+fileInputBtn.addEventListener("change", async (e) => {
   e.preventDefault();
-  
-  const text = messageInput.value.trim();
+  file_popup.classList.remove("hidden");
+  const file = fileInputBtn.files[0];
+  if (file) {
+    console.log("Selected file:", file.name, file.type);
+    if (file.type.startsWith("image/")) {  //fix message display
+      const img = document.createElement("img");
+      img.src = URL.createObjectURL(file);
+      img.alt = "Selected Image";
+      img.className = "selected-image";
+      filePopupContent.insertBefore(img, messageFormPopup);
+    }
+  }
+});
+
+async function closeFilePopup() {
+  file_popup.classList.add("hidden");
+  const files = document.querySelectorAll(".selected-image");
+  files.forEach(file => file.remove());
+  fileInputBtn.value = ""; 
+  await loadMessages();
+}
+
+async function sendMessage(e) {
+  e.preventDefault();
+
+  const text = messageInput.value.trim() || messageFormPopup.querySelector("#message-input").value.trim();
   const file = fileInputBtn.files[0];
 
   if (!text || !activeChatId) return;
@@ -265,7 +312,18 @@ messageForm.addEventListener("submit", async (e) => {
     messageInput.value = text; // restore so the user doesn't lose it
   }
   audioSent.play();
+}
+
+// ---- Sending ----
+messageForm.addEventListener("submit", async (e) => {
+  await sendMessage(e);
 });
+
+messageFormPopup.addEventListener("submit", async (e) => {
+  await sendMessage(e);
+  closeFilePopup();
+});
+  
 
 // ---- Polling ----
 function startPolling() {

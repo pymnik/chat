@@ -286,7 +286,18 @@ button:hover {
   margin-top: 6px;
 }
 
-.message-image {
+.message-img {
+  max-width: 100%;
+  border-radius: 8px;
+  margin-top: 6px;
+}
+
+.message-audio {
+  width: 100%;
+  margin-top: 6px;
+}
+
+.message-video {
   max-width: 100%;
   border-radius: 8px;
   margin-top: 6px;
@@ -315,4 +326,37 @@ button:hover {
 .file-btn:hover {
   background: var(--border);
   border-color: var(--accent);
+}
+
+.file-popup {
+  position: absolute;
+  top: 58px;
+  left: 280px;
+  width: calc(100% - 280px);
+  height: calc(100% - 58px);
+  background-color: rgba(0, 0, 0, 0.5);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.selected-image{
+  max-width: 80%;
+  display: block;
+}
+
+.file-popup-content {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 36px 32px;
+  width: 400px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
 }
