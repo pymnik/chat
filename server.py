@@ -43,10 +43,12 @@ def send_message(msg):
             if file_extension in videoTypes:
                 file_type = "mov"
                 content_type = "video/quicktime"
+                stream = ffmpeg.input(temp_input).output("temp." + file_type, vcodec="copy", acodec="copy")
             else:
                 file_type = "wav"
                 content_type = "audio/wav"
-            ffmpeg.input(temp_input).output("temp." + file_type).run(overwrite_output=True)
+                stream = ffmpeg.input(temp_input).output("temp." + file_type)
+            stream.run(overwrite_output=True)
             os.remove(temp_input)
             converted = open("temp." + file_type, "rb")
             upload_filename = os.path.splitext(file.filename)[0] + "." + file_type
