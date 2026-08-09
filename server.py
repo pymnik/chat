@@ -29,8 +29,8 @@ def get_messages(chat_id):
 
 @app.route("/api/messages/<msg>", methods=["POST"])
 def send_message(msg):
-    videoTypes = ['mp4', 'avi', 'mov', 'wmv', 'flv', 'mkv']
-    audioTypes = ['mp3', 'wav', 'ogg', 'm4a', 'flac']
+    videoTypes = ['.mp4', '.avi', '.mov', '.wmv', '.flv', '.mkv']
+    audioTypes = ['.mp3', '.wav', '.ogg', '.m4a', '.flac']
     msg = json.loads(request.form["msg"]) 
     if "file" in request.files:
         file = request.files["file"]
@@ -38,7 +38,7 @@ def send_message(msg):
         print("File extension:", file_extension)
         if file_extension in videoTypes:
             ffmpeg.input(file).output("temp.mov").run(overwrite_output=True)
-            file_type = "mov" #fix not converting
+            file_type = "mov"
             converted = open("temp." + file_type, "rb")
         elif file_extension in audioTypes:
             ffmpeg.input(file).output("temp.wav").run(overwrite_output=True)
