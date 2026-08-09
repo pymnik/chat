@@ -35,6 +35,7 @@ def send_message(msg):
     if "file" in request.files:
         file = request.files["file"]
         file_extension = os.path.splitext(file.filename)[1].lower()
+        print("File extension:", file_extension)
         if file_extension in videoTypes:
             ffmpeg.input(file).output("temp.mov").run(overwrite_output=True)
             file_type = "mov" #fix not converting
