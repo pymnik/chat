@@ -342,8 +342,18 @@ button:hover {
   justify-content: center;
 }
 
-.selected-image{
+.selected-img{
   max-width: 80%;
+  display: block;
+}
+
+.selected-video{
+  max-width: 80%;
+  display: block;
+}
+
+.selected-audio{
+  width: 80%;
   display: block;
 }
 

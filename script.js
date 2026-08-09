@@ -260,19 +260,20 @@ fileInputBtn.addEventListener("change", async (e) => {
   const file = fileInputBtn.files[0];
   if (file) {
     console.log("Selected file:", file.name, file.type);
-    if (file.type.startsWith("image/")) {  //fix message display
-      const img = document.createElement("img");
-      img.src = URL.createObjectURL(file);
-      img.alt = "Selected Image";
-      img.className = "selected-image";
-      filePopupContent.insertBefore(img, messageFormPopup);
+    const fileType = checkFileType(file.name);
+    if (fileType) { 
+      const content = document.createElement(fileType);
+      content.src = URL.createObjectURL(file);
+      content.alt = "Selected " + fileType.charAt(0).toUpperCase() + fileType.slice(1);
+      content.className = "selected-" + fileType;
+      filePopupContent.insertBefore(content, messageFormPopup);
     }
   }
 });
 
 async function closeFilePopup() {
   file_popup.classList.add("hidden");
-  const files = document.querySelectorAll(".selected-image");
+  const files = document.querySelectorAll(".selected-img, .selected-video, .selected-audio");
   files.forEach(file => file.remove());
   fileInputBtn.value = ""; 
   await loadMessages();

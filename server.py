@@ -37,16 +37,16 @@ def send_message(msg):
         file_extension = os.path.splitext(file.filename)[1].lower()
         if file_extension in videoTypes:
             ffmpeg.input(file).output("temp.mov").run(overwrite_output=True)
-            file_type = "video"
+            file_type = "mov" #fix not converting
+            request.files["file"] = open("temp." + file_type, "rb")
         elif file_extension in audioTypes:
             ffmpeg.input(file).output("temp.wav").run(overwrite_output=True)
-            file_type = "audio"
-        else:
-            file_type = "img"
+            file_type = "wav"
+            request.files["file"] = open("temp." + file_type, "rb")
 
         supabase.storage.from_("chat_files").upload(
             path=f"chat_files/{file.filename}",
-            file=file.read(),
+            file=request.files["file"].read(),
             file_options={"content-type": file.content_type, "upsert": "true"}
         )
         public_url = supabase.storage.from_("chat_files").get_public_url(f"chat_files/{file.filename}")
