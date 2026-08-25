@@ -282,7 +282,7 @@ button:hover {
   gap: 2px;
 }
 
-.img-container {
+.media-container {
   margin-top: 6px;
 }
 
@@ -294,6 +294,8 @@ button:hover {
 
 .message-audio {
   width: 100%;
+  min-width: 300px;
+  border-radius: 8px;
   margin-top: 6px;
 }
 
@@ -353,6 +355,9 @@ button:hover {
 }
 
 .selected-audio{
+  min-width: 200px;
+  border-radius: 8px;
+  margin-top: 6px;
   width: 80%;
   display: block;
 }
@@ -370,3 +375,4 @@ button:hover {
   gap: 14px;
   text-align: center;
 }
+

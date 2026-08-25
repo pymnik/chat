@@ -30,10 +30,11 @@ const filePopupClose = document.getElementById("file_popup_close");
 const filePopupContent = document.getElementById("file_popup_content");
 const messageFormPopup = document.getElementById("message-form-popup");
 const voiceInputBtn = document.getElementById("voice-input");
-const voicePlayer = document.getElementById("voice-player");
+const voiceIndicator = document.getElementById("voice-indicator");
 let messageNumber = 0;
-let audioRecorder = null;
-let audioChunks = [];
+let audioformData = null;
+let stream = null;
+let recorder = null;
 let isRecording = false;
 
 // ---- Helpers ----
@@ -205,7 +206,7 @@ function checkFileType(file) {
   if (!file) return null;
   const imageTypes = [".jpeg", ".png", ".gif", ".jpg", ".bmp", ".webp"];
   const videoTypes = [".mp4", ".avi", ".mov", ".wmv", ".flv", ".mkv"];
-  const audioTypes = [".mp3", ".wav", ".ogg", ".m4a", ".flac"];
+  const audioTypes = [".mp3", ".wav", ".ogg", ".m4a", ".flac", ".webm"];
   const fileName = file.toLowerCase();
   if (imageTypes.some(ext => fileName.endsWith(ext))) return "img";
   if (videoTypes.some(ext => fileName.endsWith(ext))) return "video";
@@ -224,6 +225,9 @@ function renderMessages(messages) {
   }
   else if (messageNumber > 0 && messages.length > messageNumber && String(messages[messages.length - 1].sender) !== String(currentUser.id)) {
     audioReceived.play();
+  }
+  else if (messageNumber > 0 && messages.length === messageNumber) {
+    return;
   }
 
   messageNumber = messages.length;
@@ -244,7 +248,7 @@ function renderMessages(messages) {
     el.className = `message ${mine ? "out" : "in"}`;
     el.innerHTML = `
       ${!mine && senderName ? `<div class="sender">${escapeHtml(senderName)}</div>` : ""}
-      ${file_url && fileType ? `<div class='img-container'><${fileType} src="${escapeHtml(file_url)}" alt="${escapeHtml(file_url)}" class="message-${fileType}"></div>` : ""}
+      ${file_url && fileType ? `<div class='media-container'><${fileType} src="${escapeHtml(file_url)}" alt="${escapeHtml(file_url)}" class="message-${fileType}" controls></div>` : ""}
       <div class="content">${escapeHtml(content)}</div>
       ${time ? `<div class="time">${escapeHtml(formatTime(time))}</div>` : ""}
     `;
@@ -263,6 +267,7 @@ fileInputBtn.addEventListener("change", async (e) => {
     const fileType = checkFileType(file.name);
     if (fileType) { 
       const content = document.createElement(fileType);
+      content.controls = true;
       content.src = URL.createObjectURL(file);
       content.alt = "Selected " + fileType.charAt(0).toUpperCase() + fileType.slice(1);
       content.className = "selected-" + fileType;
@@ -285,7 +290,7 @@ async function sendMessage(e) {
   const text = messageInput.value.trim() || messageFormPopup.querySelector("#message-input").value.trim();
   const file = fileInputBtn.files[0];
 
-  if (!text || !activeChatId) return;
+  if ((!text || !activeChatId) && (!file || !activeChatId)) return;
 
   const payload = {
     chatId: activeChatId,
@@ -314,6 +319,71 @@ async function sendMessage(e) {
   }
   audioSent.play();
 }
+
+voiceInputBtn.addEventListener("mousedown", async (e) => {
+  e.preventDefault();
+  if (isRecording) return;
+  isRecording = true;
+
+  stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  const audioChunks = [];
+  recorder = new MediaRecorder(stream);
+  recorder.ondataavailable = (e) => {
+    if (e.data.size > 0) audioChunks.push(e.data);
+  };
+
+  recorder.onstop = async () => {
+    const audio = new Blob(audioChunks, { type: "audio/webm" });
+    const audioUrl = URL.createObjectURL(audio);
+
+    const payload = {
+      chatId: activeChatId,
+      senderId: currentUser.id,
+      text: "",
+      time: new Date().toISOString()
+    };
+    audioformData = new FormData();
+    audioformData.append("file", audio, `voice_message_${Date.now()}.webm`);
+    audioformData.append("msg", JSON.stringify(payload));
+
+    try {
+      const encoded = encodeURIComponent(JSON.stringify(payload));
+      await apiPost(`/api/messages/${encoded}`, audioformData);
+      await loadMessages();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  recorder.start();
+
+  voiceIndicator.classList.remove("hidden")
+
+  var options = {
+	at: "container",
+	type: "oscilloscope",
+	thickness: 5,
+	id: "voice-indicator",
+	color: "#39FF14",
+	background: "#303030",
+	fade: 1,
+	fftSize: 2048
+  };
+
+  var myOscilloscope = new Oscilloscope(options);
+  ;
+});
+
+voiceInputBtn.addEventListener("mouseup", (e) => {
+  e.preventDefault();
+  if (!isRecording) return;
+
+  voiceIndicator.classList.add("hidden");
+
+  recorder.stop();
+  stream.getTracks().forEach(track => track.stop());
+  isRecording = false;
+});
 
 // ---- Sending ----
 messageForm.addEventListener("submit", async (e) => {

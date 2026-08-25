@@ -37,9 +37,8 @@
         <input id="message-input" type="text" placeholder="Type a message…" autocomplete="off" />
         <label for="file-input" class="file-btn" title="Attach a file">📎</label>
         <input id="file-input" type="file" class="file-input-hidden" />
-        <label for="voice-input" type="file" class="voice-btn" title="Record a voice message">🎤</label>
-        <input id="voice-input" type="file" class="voice-input-hidden"/>
-        <audio id="voice-player" controls class="voice-player hidden"></audio>
+        <div id="voice-indicator" class="voice-indicator hidden"></div>
+        <label id="voice-input" type="file" class="file-btn" title="Record a voice message">🎤</label>
         <button type="submit">Send</button>
       </form>
       <div id="file_popup" class="file-popup hidden">
@@ -54,6 +53,7 @@
     </main>
   </div>
 
+  <script src="https://unpkg.com/wavesurfer.js@7"></script>
   <script src="script.js"></script>
 </body>
 </html>

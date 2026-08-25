@@ -58,6 +58,8 @@ def send_message(msg):
         else:
             file_bytes = file.read()
 
+        #fix mp3 sending
+
         supabase.storage.from_("chat_files").upload(
             path=f"chat_files/{upload_filename}",
             file=file_bytes,
